@@ -1,0 +1,65 @@
+<?php
+	require 'connectDB.php';
+	if(!$entry=$db->query("SELECT * from alumni"))
+		die('There was an error connecting: queryError [' . $db->error . ']');
+		
+	while($onealum=$entry->fetch_assoc()){
+		$name = $onealum['Name'];
+		$major = $onealum['Major'];
+		$class = $onealum['Class'];
+		$longitude = $onealum['Longitude'];
+		$latitude = $onealum['Latitude'];
+		print <<<HTMLBlock
+		  new google.maps.LatLng($latitude, $longitude),
+HTMLBlock;
+	}
+?>
+------------------------------------------------------------------------------------------
+<?php	
+	require 'connectDB.php';
+	$major = $_POST['data'];
+	if ($major != 'All'){
+
+		if(!$entry=$db->query("SELECT * FROM trial WHERE Major = '$major'"))
+			die('There was an error connecting: queryError [' . $db->error . ']');
+	}
+	else{
+		if(!$entry=$db->query("SELECT * FROM trial"))
+			die('There was an error connecting: queryError [' . $db->error . ']');
+	}
+		
+	while($onealum=$entry->fetch_assoc()){
+		$longitude = $onealum['Longitude'];
+		$latitude = $onealum['Latitude'];
+		print <<<HTMLBlock
+		  new google.maps.LatLng($latitude, $longitude),
+HTMLBlock;
+	}
+?>
+---------------------------------------------------------------------------------------------
+require 'connectDB.php';
+	if(!$foo = $db->query("SELECT * FROM currmajor WHERE ID = '0'"))
+		die('There was an error connecting: queryError [' . $db->error / ']');
+	while($currmajor = $foo->fetch_assoc()){
+		$major = $currmajor['Major'];
+	}
+	if ($major == 'All'){
+		if(!$entry=$db->query("SELECT * FROM trial"))
+			die('There was an error connecting: queryError [' . $db->error . ']');
+		
+	}
+	else{
+		if(!$entry=$db->query("SELECT * FROM trial WHERE Major = '$major'"))
+			die('There was an error connecting: queryError [' . $db->error . ']');
+	}
+		
+	while($onealum=$entry->fetch_assoc()){
+		$name = $onealum['Name'];
+		$major = $onealum['Major'];
+		$class = $onealum['Class'];
+		$longitude = $onealum['Longitude'];
+		$latitude = $onealum['Latitude'];
+		print <<<HTMLBlock
+		  new google.maps.LatLng($latitude, $longitude),
+HTMLBlock;
+	}
