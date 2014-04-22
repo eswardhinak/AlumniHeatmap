@@ -23,9 +23,14 @@
 			$genloc = -1*$genloc;
 		$longitude = $genloc+$offset;
 		$testname = "Eswar";
-		$testmajor = "Computer Science";
-		$testclass = 2016;
-		$testemail = "aviv.87@gmail.com";
+		$major_rand = rand(0,1);
+		if($major_rand == 1)
+			$testmajor = "Computer Science";
+		else
+			$testmajor = "Economics";
+		$class_offset = rand(0, 54);
+		$testclass = 1960 + $class_offset;
+		$testemail = "eswardhinak@gmail.com";
 		if(!$entry=$db->query("INSERT INTO trial(Name, Major, Class, Latitude, Longitude) VALUES ('$testname', '$testmajor', '$testclass', '$latitude', '$longitude');"))
 			die('There was an error connecting: queryError [' . $db->error . ']');
 	}

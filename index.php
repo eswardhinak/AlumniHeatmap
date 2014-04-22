@@ -1,3 +1,15 @@
+<!--
+  FileName: index.php
+  Author: Eswar Dhinakaran
+  Date of Last Modification: 7 April 2014
+  Languages: PHP5, Javascript, HTML5, CSS3, MySQL
+  APIs: Google Maps API v3
+  Description: This is the index file for this directory. It is the
+                first file called in this heatmap site. It uses the
+                Google Maps API to display a heatmap that is 
+                populated off information in a MySQL table. It pulls
+                Alumni longitude and latitude.
+-->
 <!DOCTYPE html>
 <html>
   <head>
@@ -22,21 +34,16 @@
     </style>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=visualization"></script>
     <script>
-// Adding 500 Data Points
 var map, pointarray, heatmap, new_alumdata;
+//populates the array with all the alumni information
 var alumdata = [
 <?php
-	require 'connectDB.php';
-	if (!$majorchange=$db->query("UPDATE currmajor SET Major = 'All' WHERE ID='0'"))
-		die('There was an error connecting: queryError [' .$db->error . ']');
-
+	require 'connectDB.php'; //file to connect to database
 	if(!$entry=$db->query("SELECT * FROM trial"))
 		die('There was an error connecting: queryError [' . $db->error . ']');
-		
-	while($onealum=$entry->fetch_assoc()){
-		$name = $onealum['Name'];
-		$major = $onealum['Major'];
-		$class = $onealum['Class'];
+	
+  //pareses t
+  while($onealum=$entry->fetch_assoc()){
 		$longitude = $onealum['Longitude'];
 		$latitude = $onealum['Latitude'];
 		print <<<HTMLBlock
@@ -47,7 +54,7 @@ HTMLBlock;
 ];
 function initialize() {
   var mapOptions = {
-    zoom: 2,
+    zoom: 3,
     center: new google.maps.LatLng(32.8807, -117.2359),
     mapTypeId: google.maps.MapTypeId.SATELLITE
   };
@@ -107,52 +114,68 @@ google.maps.event.addDomListener(window, 'load', initialize);
       <button onclick="changeGradient()">Change gradient</button>
       <button onclick="changeRadius()">Change radius</button>
       <button onclick="changeOpacity()">Change opacity</button>
-	  <select id = "major" onchange = "jsfunction()">
-			<option value = "All">All</option>
-			<option value = "compsci">Computer Science</option>
-			<option value = "econ">Economics</option>
-	  </select>
+      <button onclick="viewEveryone()">View Everyone</button>
+    
+    <form id = "major" action = "Major.php" method = "POST">
+      <select name = "choices">
+        <option value = "All">--choose one--</option>
+        <option value = "All">All</option>
+        <option value = "Computer Science">Computer Science</option>
+        <option value = "Economics">Economics</option>
+      </select>
+      
+      <select name = "classyear">
+        <option value = "All">--choose one--</option>
+        <option value = "All">All</option>
+        <?php 
+          for ($i=1960; $i<=2014; $i++){
+            print <<<HTMLBLOCK
+              <option value = "$i">$i</option>
+HTMLBLOCK;
+          }
+        ?>
+      </select>
+      <?php print <<<HTMLBLOCK
+      Currently viewing <strong>all</strong> majors from <strong>all</strong> years
+HTMLBLOCK;
+      ?>
+      <input type = 'submit' />
+    </form>
+      
 	</div>
     <div id="map-canvas"></div>
   </body>
   <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
   <script>
-	function jsfunction(){
+	function specifyMajor(){
 		var major = $('#major').find(":selected").text();
 		alert(major);
-		new_alumdata = [ 
-			$.ajax({
-				url: 'Major.php',
-				type: 'POST'
-				data: { major : major },
-				success: function (data) {	
-					alert("Successfulfulfulf");
-				}
-			})
-		];
-		
-		//initialize_again();
 	
 		
 	}
 	function initialize_again() {
-  var mapOptions = {
-    zoom: 2,
-    center: new google.maps.LatLng(32.8807, -117.2359),
-    mapTypeId: google.maps.MapTypeId.SATELLITE
-  };
+    var mapOptions = {
+      zoom: 2,
+      center: new google.maps.LatLng(32.8807, -117.2359),
+      mapTypeId: google.maps.MapTypeId.SATELLITE
+    };
 
-  map = new google.maps.Map(document.getElementById('map-canvas'),
-      mapOptions);
+    map = new google.maps.Map(document.getElementById('map-canvas'),
+        mapOptions);
 
-  var pointArray = new google.maps.MVCArray(new_alumdata);
+    var pointArray = new google.maps.MVCArray(new_alumdata);
 
-  heatmap = new google.maps.visualization.HeatmapLayer({
-    data: pointArray
-  });
+    heatmap = new google.maps.visualization.HeatmapLayer({
+      data: pointArray
+    });
 
-  heatmap.setMap(map);
-}
+    heatmap.setMap(map);
+  }
+
+  function viewEveryone(){
+    window.location.href = "index.php";
+  }
+
 
 	</script>
 		
